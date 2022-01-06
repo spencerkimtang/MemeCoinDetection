@@ -12,10 +12,10 @@ plt.style.use('seaborn-darkgrid')
 
 def setup_API():
     # Get twitter API Credentials
-    consumerKey = 'f9fDZHAXP7s2K57vSfvSaTXNX'
-    consumerSecret = 'bS2rvWEfQJikXpx26x7bnpBlwHcBgYOO1hZrpvjVf8r7XKTu9R'
-    accessToken = '1478395338943836160-JXwzrQUGUGWJzFU6xT0SXUOWnEKCsc'
-    accessSecret = '71Obwqh5XOsoV1899nc0nLF7Z5E5z12d01561eySPrkE5'
+    consumerKey = ''
+    consumerSecret = ''
+    accessToken = ''
+    accessSecret = ''
 
     auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
     auth.set_access_token(accessToken, accessSecret)
