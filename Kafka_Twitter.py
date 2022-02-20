@@ -1,3 +1,9 @@
+"""
+This is the initial script to our Apache kafka data pipeline. Here we gather twitter data, which is then formatted to include the desired information.
+The data is then fed into an Apache Kafka server via the producer structure.
+The start of the pipeline.
+"""
+
 import tweepy, time, re, json, os
 import pandas as pd
 from datetime import datetime, date
@@ -17,36 +23,6 @@ def setup_API():
 
     return tweepy.API(auth, wait_on_rate_limit=True)
 
-def normalize_timestamp(ts):
-    """Normalize the timestamp for consistency"""
-
-    newTS = ts.split(' ')[0] 
-    myTS = datetime.strptime(newTS, '%Y-%m-%d')
-    return (myTS.strftime('%Y-%m-%d'))
-
-def clean(tweet):
-    """Cleans the data"""
-    
-    # Currently this will remove crypto coin abreviations, which we might want to keep such as #BTC for bitcoin
-    tweet = re.sub('#bitcoin', 'bitcoin', tweet)
-    tweet = re.sub('#Bitcoin', 'Bitcoin', tweet)
-    tweet = re.sub('#[A-Za-z0-9]+', '', tweet)      # Removes uncorrelated hashtags
-    tweet = re.sub('\\n', '', tweet)                # Removes \n' 
-    tweet = re.sub('#https?:\/\/\S+', '', tweet)    # Removes hyperlinks (THIS NEEDS TO BE FIXED, CURRENTLY NOT WORKING)
-
-    return tweet
-
-def check_URLS(since, until, num_tweets, query):
-    """A function to simply validate the tweets by URL"""
-
-    os.system(f"snscrape --since {since} --max-results {num_tweets} twitter-search '{query} until:{until}' > result-tweets.txt")
-    if os.stat('result-tweets.txt').st_size == 0:
-        counter = 0
-    else:
-        df = pd.read_csv('result-tweets.txt', names=['link'])
-        counter = df.size
-
-    print('Number of tweets: ' + str(counter))
 
 def get_past_tweets(api, query, producer, topic, num_tweets):
     """Gathers all past tweets based on the given query"""
@@ -85,10 +61,9 @@ def get_live_tweets(api, query, producer, topic):
 
 def main():
     api = setup_API()
-    #producer = KafkaProducer(bootstrap_servers= 'localhost:9092')   #Producer API allows applications to send streams of data to topics in the Kafka cluster
+    producer = KafkaProducer(bootstrap_servers= 'localhost:9092')   #Producer API allows applications to send streams of data to topics in the Kafka cluster
     topic = 'Crypto-Tweets'
     query = '#bitcoin -filter:retweets'
-    producer = ''
     
     num_tweets = 10
     get_past_tweets(api, query, producer, topic, num_tweets)
